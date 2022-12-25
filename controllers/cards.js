@@ -1,6 +1,6 @@
 import cardSchema from "../models/card.js";
 
-export const getCards = (res, next) => {
+export const getCards = (req, res, next) => {
   cardSchema.find({})
     .then((cards) => {
       res.status(200).send(cards);

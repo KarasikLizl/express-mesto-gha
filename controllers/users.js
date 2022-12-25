@@ -1,6 +1,6 @@
 import userSchema from "../models/user.js";
 
-export const getUsers = (res, next) => {
+export const getUsers = (req, res, next) => {
   userSchema
     .find({})
     .then((users) => res.status(200).send(users))

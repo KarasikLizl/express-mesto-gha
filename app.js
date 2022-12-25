@@ -11,14 +11,14 @@ const {
     MONGO_URL = 'mongodb://localhost:27017/mestodb'
 } = process.env;
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
-app.use(express.json())
-app.use((req, next) => {
+app.use((req,res, next) => {
   req.user = {
     _id: '63a71829f4b3fca339abfbbe' // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-  next();
+  }
+  next()
 });
 
 app.use(usersRoutes);
