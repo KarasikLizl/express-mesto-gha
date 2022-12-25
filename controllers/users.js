@@ -18,7 +18,7 @@ export const getUserById = (req, res, next) => {
     .findById(req.params.userId)
     .orFail(() => {
       return res
-        .status(404)
+        .status(400)
         .send({ message: "Пользователь с указанным id не найден" });
     })
     .then((user) => {
@@ -39,10 +39,10 @@ export const createUser = (req, res, next) => {
     .create({ name, about, avatar })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err) {
-        res.status(500).send({ message: "Ошибка на сервере" });
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: "Проверьте введенные данные" });
       } else {
-        next();
+        res.status(500).send({ message: "Ошибка на сервере" });
       }
     });
 };
@@ -60,10 +60,10 @@ export const updateProfile = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === "CastError" || err.name === "ValidationError") {
+      if (err.name === "ValidationError") {
         return res.status(400).send({ message: "Неверные данные" });
       } else {
-        res.status(500).send({ message: "Ошибка на сервере" });
+        return res.status(500).send({ message: "Ошибка на сервере" });
       }
     })
     .catch(next);

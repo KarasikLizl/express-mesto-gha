@@ -20,7 +20,7 @@ export const createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: "Необходимо проверить заполненные поля" });
       } else {
-        res.status(500).send( {message: "Ошибка на сервере"} )
+        return res.status(500).send( {message: "Ошибка на сервере"} )
       }
     })
     .catch(next)
