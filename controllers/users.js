@@ -35,7 +35,7 @@ export const getUserById = (req, res, next) => {
 export const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   userSchema
-    .create({ name, about, avatar }, { runValidators: true })
+    .create({ name, about, avatar })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
