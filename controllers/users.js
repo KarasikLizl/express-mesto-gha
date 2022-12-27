@@ -17,7 +17,7 @@ export const getUserById = (req, res, next) => {
   userSchema
     .findById(req.params.userId)
     .orFail(() => {
-      return res
+       res
         .status(400)
         .send({ message: "Пользователь с указанным id не найден" });
     })
@@ -25,22 +25,21 @@ export const getUserById = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err) {
-        res.status(500).send({ message: "Ошибка на сервере" });
-      } else {
-        next();
-      }
-    });
+      if(err.name === 'CastError') {
+          res.status(400).send({message: 'id не найдет', ...err})
+      }  else {
+          res.status(500).send({message: 'Ошибка на сервере'})
+      } });
 };
 
 export const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   userSchema
-    .create({ name, about, avatar })
+    .create({ name, about, avatar }, { runValidators: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: "Проверьте введенные данные" });
+        res.status(400).send({ message: "Ошибка валидации" });
       } else {
         res.status(500).send({ message: "Ошибка на сервере" });
       }
