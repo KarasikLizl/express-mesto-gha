@@ -1,12 +1,18 @@
 import userSchema from "../models/user.js";
+import {
+  OK,
+  BAD_REQUEST,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+} from "../constants/errors.js";
 
 export const getUsers = (req, res, next) => {
   userSchema
     .find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.status(OK).send(users))
     .catch((err) => {
       if (err) {
-        res.status(500).send({ message: "Ошибка на сервере" });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: "Ошибка на сервере" });
       } else {
         next();
       }
@@ -17,31 +23,32 @@ export const getUserById = (req, res, next) => {
   userSchema
     .findById(req.params.userId)
     .orFail(() => {
-       res
-        .status(404)
+      res
+        .status(NOT_FOUND)
         .send({ message: "Пользователь с указанным id не найден" });
     })
     .then((user) => {
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((err) => {
-      if(err.name === 'CastError') {
-          res.status(400).send({message: 'id не найдет', ...err})
-      }  else {
-          res.status(500).send({message: 'Ошибка на сервере'})
-      } });
+      if (err.name === "CastError") {
+        res.status(BAD_REQUEST).send({ message: "id не найдет", ...err });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: "Ошибка на сервере" });
+      }
+    });
 };
 
 export const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   userSchema
     .create({ name, about, avatar })
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: "Ошибка валидации" });
+      if (err.name === "ValidationError") {
+        res.status(BAD_REQUEST).send({ message: "Ошибка валидации" });
       } else {
-        res.status(500).send({ message: "Ошибка на сервере" });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: "Ошибка на сервере" });
       }
     });
 };
@@ -54,15 +61,15 @@ export const updateProfile = (req, res, next) => {
       { name, about },
       { new: true, runValidators: true }
     )
-    .orFail(() => res.status(404).send({ message: "Пользователь не найден" }))
+    .orFail(() => res.status(NOT_FOUND).send({ message: "Пользователь не найден" }))
     .then((user) => {
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Неверные данные" });
+        return res.status(BAD_REQUEST).send({ message: "Неверные данные" });
       } else {
-        return res.status(500).send({ message: "Ошибка на сервере" });
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: "Ошибка на сервере" });
       }
     })
     .catch(next);
@@ -76,17 +83,17 @@ export const updateAvatar = (req, res, next) => {
       { avatar },
       { new: true, runValidators: true }
     )
-    .orFail(() => res.status(404).send({ message: "Пользователь не найден" }))
+    .orFail(() => res.status(NOT_FOUND).send({ message: "Пользователь не найден" }))
     .then((user) => {
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Неверные данные" });
+        return res.status(BAD_REQUEST).send({ message: "Неверные данные" });
       } else if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Вставьте корректную ссылку" });
+        return res.status(BAD_REQUEST).send({ message: "Вставьте корректную ссылку" });
       } else {
-        res.status(500).send({ message: "Ошибка на сервере" });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: "Ошибка на сервере" });
       }
     })
     .catch(next);
