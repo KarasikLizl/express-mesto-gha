@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import usersRoutes from './routes/users.js';
 import cardRoutes from './routes/cards.js';
+import notFoundRouter from './routes/notFoud.js';
 import path from 'path';
 
 const __dirname = path.resolve();
@@ -23,6 +24,7 @@ app.use((req,res, next) => {
 
 app.use(usersRoutes);
 app.use(cardRoutes);
+app.use(notFoundRouter);
 
 async function connect() {
   await mongoose.connect(MONGO_URL, {});
