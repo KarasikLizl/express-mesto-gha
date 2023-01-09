@@ -18,21 +18,18 @@ export const getUserById = (req, res, next) => {
     .findById(req.params.userId)
     .orFail(() => {
        res
-        .status(400)
+        .status(404)
         .send({ message: "Пользователь с указанным id не найден" });
     })
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({ message: "Некорректный Id пользователя" });
-      } else if (err.message === "IncorrectId") {
-        return res.status(404).send({ message: "Пользователь по этому id не найден" });
-      } else {
-        res.status(500).send( {message: "Ошибка на сервере"} )
-      }
-    });
+      if(err.name === 'CastError') {
+          res.status(400).send({message: 'id не найдет', ...err})
+      }  else {
+          res.status(500).send({message: 'Ошибка на сервере'})
+      } });
 };
 
 export const createUser = (req, res, next) => {
