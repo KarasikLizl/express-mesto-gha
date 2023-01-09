@@ -5,7 +5,13 @@ export const getCards = (req, res, next) => {
     .then((cards) => {
       res.status(200).send(cards);
     })
-    .catch(res.status(500).send({message: 'Ошибка на сервере'}))
+    .catch((err) => {
+      if (err) {
+        res.status(500).send({ message: "Ошибка на сервере" });
+      } else {
+        next();
+      }
+    });
 };
 
 export const createCard = (req, res, next) => {

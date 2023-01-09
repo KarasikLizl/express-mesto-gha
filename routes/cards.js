@@ -3,7 +3,7 @@ import {getCards, createCard, deleteCard, putLikeCard, deleteLikeCard } from '..
 
 const cardRoutes = express.Router();
 
-cardRoutes.get('/cards', getCards);
+cardRoutes.get('/cards', express.json(), getCards);
 
 cardRoutes.post('/cards', express.json(), createCard);
 
