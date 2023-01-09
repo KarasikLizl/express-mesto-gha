@@ -17,12 +17,12 @@ const cardSchema = new mongoose.Schema({
   },
   likes: {
     default: [],
-    type: mongoose.Schema.Types.Array
+    type: mongoose.Schema.Types.Array,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
-})
+    default: Date.now,
+  },
+});
 
 export default mongoose.model('card', cardSchema);

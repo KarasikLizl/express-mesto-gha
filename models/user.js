@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
       validator: (avatar) => validator.isURL(avatar),
       message: 'Ошибка валидации',
     },
-  }
-})
+  },
+});
 
 export default mongoose.model('user', userSchema);
