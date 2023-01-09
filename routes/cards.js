@@ -5,7 +5,7 @@ import {
   deleteCard,
   putLikeCard,
   deleteLikeCard,
-} from '../controllers/cards';
+} from '../controllers/cards.js';
 
 const cardRoutes = express.Router();
 

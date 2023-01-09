@@ -1,11 +1,11 @@
-import cardSchema from '../models/card';
+import cardSchema from '../models/card.js';
 import {
   OK,
   BAD_REQUEST,
   FORBIDDEN,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
-} from '../constants/errors';
+} from '../constants/errors.js';
 
 export const getCards = (req, res, next) => {
   cardSchema

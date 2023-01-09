@@ -7,14 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint",
     "dev": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node --experimental-modules --es-module-specifier-resolution=node app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yandex-praktikum/express-mesto-gha.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Елизавета Кручинина",
   "type": "module",
   "license": "ISC",
   "bugs": {
@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^6.8.0",
-    "validator-js": "^0.2.1"
+    "mongoose": "^6.8.0"
   }
 }

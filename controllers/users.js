@@ -1,10 +1,10 @@
-import userSchema from '../models/user';
+import userSchema from '../models/user.js';
 import {
   OK,
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
-} from '../constants/errors';
+} from '../constants/errors.js';
 
 export const getUsers = (req, res, next) => {
   userSchema

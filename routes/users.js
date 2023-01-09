@@ -5,7 +5,7 @@ import {
   getUsers,
   updateProfile,
   updateAvatar,
-} from '../controllers/users';
+} from '../controllers/users.js';
 
 const usersRoutes = express.Router();
 

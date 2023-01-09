@@ -1,9 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
-import usersRoutes from './routes/users';
-import cardRoutes from './routes/cards';
-import notFoundRouter from './routes/notFoud';
+import usersRoutes from './routes/users.js';
+import cardRoutes from './routes/cards.js';
+import notFoundRouter from './routes/notFoud.js';
 
 const __dirname = path.resolve();
 const app = express();
@@ -25,9 +25,8 @@ app.use(notFoundRouter);
 
 async function connect() {
   await mongoose.connect(MONGO_URL, {});
-  // console.log(`Server connect db ${MONGO_URL}`);
   app.listen(PORT);
-  // console.log(`App listening on port ${PORT}`);
+  console.log(`App listening on port ${PORT}`);
 }
 
 connect();

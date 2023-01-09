@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
-import validator from 'validator';
+import { urlRegExp } from '../constants/validator.js';
+// import validator from 'validator';
+
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,9 +20,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (avatar) => validator.isURL(avatar),
-      message: 'Ошибка валидации',
-    },
+      validator: (v) => urlRegExp.test(v),
+      message: 'Поле "link" должно быть валидным url-адресом.',
+      },
   },
 });
 
