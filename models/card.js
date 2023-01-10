@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { urlRegExp } from '../constants/validator.js';
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +11,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (v) => urlRegExp.test(v),
+      message: 'Поле должно быть валидным url-адресом.',
+      },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
