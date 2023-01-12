@@ -18,7 +18,7 @@ export const getUsers = (req, res, next) => {
     });
 };
 
-export const getUserById = (req, res) => {
+export const getUserById = (req, res, next) => {
   userSchema
     .findById(req.params.userId)
     .orFail(() => {
@@ -36,7 +36,7 @@ export const getUserById = (req, res) => {
     });
 };
 
-export const createUser = (req, res) => {
+export const createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
   if (!email || !password) {
     throw new BadRequestError('Не указан email или пароль');

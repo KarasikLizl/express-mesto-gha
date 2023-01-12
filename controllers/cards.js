@@ -34,7 +34,7 @@ export const createCard = (req, res, next) => {
     // .catch(next);
 };
 
-export const deleteCard = (req, res) => {
+export const deleteCard = (req, res, next) => {
   cardSchema
     .findById(req.params.cardId)
     .orFail(() => {
