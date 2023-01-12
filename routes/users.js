@@ -13,7 +13,7 @@ usersRoutes.get('/users', express.json(), getUsers);
 
 usersRoutes.get('/users/:userId', express.json(), getUserById);
 
-usersRoutes.post('/users', express.json(), createUser);
+// usersRoutes.post('/users', express.json(), createUser);
 
 usersRoutes.patch('/users/me', updateProfile);
 

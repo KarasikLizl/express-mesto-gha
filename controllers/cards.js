@@ -1,11 +1,9 @@
 import cardSchema from '../models/card.js';
-import {
-  OK,
-  BAD_REQUEST,
-  FORBIDDEN,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
-} from '../constants/errors.js';
+import { OK } from '../constants/errors.js';
+
+import BadRequestError from "../errors/bad_req.js";
+import NotFoundError from "../errors/not_found.js";
+import ForbiddenError from '../errors/forbidden.js';
 
 export const getCards = (req, res, next) => {
   cardSchema
@@ -14,13 +12,7 @@ export const getCards = (req, res, next) => {
       res.status(OK).send(cards);
     })
     .catch((err) => {
-      if (err) {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка на сервере' });
-      } else {
-        next();
-      }
+      next(err);
     });
 };
 
@@ -34,16 +26,12 @@ export const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Необходимо проверить заполненные поля' });
+        throw new BadRequestError('Введены некорректные данные')
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка на сервере' });
+        next(err);
       }
     })
-    .catch(next);
+    // .catch(next);
 };
 
 export const deleteCard = (req, res) => {
@@ -58,22 +46,16 @@ export const deleteCard = (req, res) => {
           res.status(OK).send({ message: 'Карточка удалена' });
         });
       } else {
-        res
-          .status(FORBIDDEN)
-          .send({ message: 'Вы не можете удалить эту карточку' });
+       throw new ForbiddenError('Вы не можете удалить эту карточку');
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Карточка не найдена' });
+        throw new BadRequestError('Карточка не найдена');
       } else if (err.message === 'IncorrectId') {
-        res
-          .status(NOT_FOUND)
-          .send({ message: 'Карточка по этому id не найдена' });
+        throw new NotFoundError('Карточка по этому id не найдена');
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка на сервере' });
+        next(err);
       }
     });
 };
@@ -93,15 +75,11 @@ export const putLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Карточка не найдена' });
+        throw new BadRequestError('Карточка не найдена');
       } else if (err.message === 'IncorrectId') {
-        res
-          .status(NOT_FOUND)
-          .send({ message: 'Карточка по этому id не найдена' });
+        throw new NotFoundError('Карточка по этому id не найдена');
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка на сервере' });
+       next(err);
       }
     })
     .catch(next);
@@ -122,15 +100,11 @@ export const deleteLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Карточка не найдена' });
+        throw new BadRequestError('Карточка не найдена');
       } else if (err.message === 'IncorrectId') {
-        res
-          .status(NOT_FOUND)
-          .send({ message: 'Карточка по этому id не найдена' });
+        throw new NotFoundError('Карточка по этому id не найдена');
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка на сервере' });
+        next(err);
       }
     })
     .catch(next);

@@ -1,21 +1,20 @@
 import userSchema from '../models/user.js';
-import {
-  OK,
-  BAD_REQUEST,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
-} from '../constants/errors.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { MONGO_DUPLICATE_ERROR, OK } from '../constants/errors.js';
+import { SOLT_ROUNDS } from '../constants/solt.js';
+
+import BadRequestError from "../errors/bad_req.js";
+import NotFoundError from "../errors/not_found.js";
+import ConflictError from '../errors/conflict.js';
+import NotAuthorizedError from '../errors/unauthorized.js';
 
 export const getUsers = (req, res, next) => {
   userSchema
     .find({})
     .then((users) => res.status(OK).send(users))
     .catch((err) => {
-      if (err) {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
-      } else {
-        next();
-      }
+        next(err);
     });
 };
 
@@ -23,34 +22,89 @@ export const getUserById = (req, res) => {
   userSchema
     .findById(req.params.userId)
     .orFail(() => {
-      res
-        .status(NOT_FOUND)
-        .send({ message: 'Пользователь с указанным id не найден' });
+      throw new NotFoundError('Пользователь с указанным id не найден');
     })
     .then((user) => {
       res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'id не найден', ...err });
+        throw new BadRequestError('id не найден');
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
+        next(err);
       }
     });
 };
 
 export const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  userSchema
-    .create({ name, about, avatar })
-    .then((user) => res.status(OK).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка валидации' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
+  const { email, password, name, about, avatar } = req.body;
+  if (!email || !password) {
+    throw new BadRequestError('Не указан email или пароль');
+  }
+  userSchema.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictError('Этот email уже зарегестрирован');
       }
     });
+    bcrypt
+      .hash(req.body.password, SOLT_ROUNDS)
+      .then((hash) => userSchema.create({
+        email: req.body.email,
+        password: hash,
+        name: req.body.name,
+        about: req.body.about,
+        avatar: req.body.avatar,
+      })
+        .then((user) => {
+          res.status(OK).send({
+            _id: user._id,
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+          });
+        })
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            throw new BadRequestError('Ошибка при создании пользователя');
+          } else if (err.code === MONGO_DUPLICATE_ERROR) {
+            throw new ConflictError('Такой пользователь уже существует');
+          } else next(err);
+        }))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          throw new BadRequestError('Введены некорректные данные');
+        } else if (err.code === MONGO_DUPLICATE_ERROR) {
+          throw new ConflictError('Такой пользователь уже существует');
+        } else next(err);
+      });
+};
+
+export const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new BadRequestError('Проверьте введенные данные');
+  } else {
+    userSchema.findOne({ email }).select('+password')
+      .orFail(() => {
+        throw new NotAuthorizedError('Неверный email или пароль');
+      })
+      .then((user) => {
+        bcrypt.compare(password, user.password)
+          .then((matched) => {
+            if (!matched) {
+              throw new NotAuthorizedError('Неверный email или пароль');
+            } else {
+              const token = jwt.sign({ _id: user._id }, 'super-strong-secret-key', { expiresIn: '7d' });
+              res.send({ token });
+            }
+          })
+          .catch((err) => next(err));
+      })
+      .catch(next);
+  }
 };
 
 export const updateProfile = (req, res, next) => {
@@ -61,15 +115,15 @@ export const updateProfile = (req, res, next) => {
       { name, about },
       { new: true, runValidators: true },
     )
-    .orFail(() => res.status(NOT_FOUND).send({ message: 'Пользователь не найден' }))
+    .orFail(() =>{ throw new NotFoundError('Пользователь не найден') })
     .then((user) => {
       res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
+        throw new BadRequestError('Введены некорректные данные');
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
+        next(err);
       }
     })
     .catch(next);
@@ -83,17 +137,17 @@ export const updateAvatar = (req, res, next) => {
       { avatar },
       { new: true, runValidators: true },
     )
-    .orFail(() => res.status(NOT_FOUND).send({ message: 'Пользователь не найден' }))
+    .orFail(() => { throw new NotFoundError('Пользователь не найден') })
     .then((user) => {
       res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
+        throw new BadRequestError('Введены некорректные данные');
       } else if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Вставьте корректную ссылку' });
+        throw new BadRequestError('Вставьте корректную ссылку');
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
+        next(err);
       }
     })
     .catch(next);
