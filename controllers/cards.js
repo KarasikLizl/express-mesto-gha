@@ -26,7 +26,7 @@ export const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Введены некорректные данные')
+        next(new BadRequestError('Введены некорректные данные'));
       } else {
         next(err);
       }
@@ -51,9 +51,9 @@ export const deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Карточка не найдена');
+        next(new BadRequestError('Карточка не найдена'));
       } else if (err.message === 'IncorrectId') {
-        throw new NotFoundError('Карточка по этому id не найдена');
+        next(new NotFoundError('Карточка по этому id не найдена'));
       } else {
         next(err);
       }
@@ -75,9 +75,9 @@ export const putLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Карточка не найдена');
+        next(new BadRequestError('Карточка не найдена'));
       } else if (err.message === 'IncorrectId') {
-        throw new NotFoundError('Карточка по этому id не найдена');
+        next(new NotFoundError('Карточка по этому id не найдена'));
       } else {
        next(err);
       }
@@ -100,9 +100,9 @@ export const deleteLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Карточка не найдена');
+        next(new BadRequestError('Карточка не найдена'));
       } else if (err.message === 'IncorrectId') {
-        throw new NotFoundError('Карточка по этому id не найдена');
+        next(new NotFoundError('Карточка по этому id не найдена'));
       } else {
         next(err);
       }

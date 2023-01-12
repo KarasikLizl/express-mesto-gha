@@ -44,7 +44,7 @@ export const createUser = (req, res, next) => {
   userSchema.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new ConflictError('Этот email уже зарегестрирован');
+        next(new ConflictError('Этот email уже зарегестрирован'));
       }
     });
     bcrypt
@@ -67,16 +67,16 @@ export const createUser = (req, res, next) => {
         })
         .catch((err) => {
           if (err.name === 'ValidationError') {
-            throw new BadRequestError('Ошибка при создании пользователя');
+            next(new BadRequestError('Ошибка при создании пользователя'));
           } else if (err.code === MONGO_DUPLICATE_ERROR) {
-            throw new ConflictError('Такой пользователь уже существует');
+            next(new ConflictError('Такой пользователь уже существует'));
           } else next(err);
         }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          throw new BadRequestError('Введены некорректные данные');
+          next(new BadRequestError('Введены некорректные данные'));
         } else if (err.code === MONGO_DUPLICATE_ERROR) {
-          throw new ConflictError('Такой пользователь уже существует');
+          next(new ConflictError('Такой пользователь уже существует'));
         } else next(err);
       });
 };
@@ -121,7 +121,7 @@ export const updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Введены некорректные данные');
+        next(new BadRequestError('Введены некорректные данные'));
       } else {
         next(err);
       }
@@ -143,9 +143,9 @@ export const updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Введены некорректные данные');
+        next(new BadRequestError('Введены некорректные данные'));
       } else if (err.name === 'ValidationError') {
-        throw new BadRequestError('Вставьте корректную ссылку');
+        next(new BadRequestError('Вставьте корректную ссылку'));
       } else {
         next(err);
       }
