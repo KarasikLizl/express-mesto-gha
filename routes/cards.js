@@ -6,6 +6,7 @@ import {
   putLikeCard,
   deleteLikeCard,
 } from '../controllers/cards.js';
+import { celebrate, Joi } from 'celebrate';
 
 const cardRoutes = express.Router();
 
