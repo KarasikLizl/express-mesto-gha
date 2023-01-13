@@ -36,6 +36,18 @@ export const getUserById = (req, res, next) => {
     });
 };
 
+export const getMyProfile = (req, res, next) => {
+  userSchema.findById(req.user._id)
+    .orFail(() => {
+      console.log(req.user);
+      throw new NotFoundError('Пользователь не найден');
+    })
+    .then((users) => {
+      res.status(OK).send(users);
+    })
+    .catch(next);
+};
+
 export const createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
   if (!email || !password) {
