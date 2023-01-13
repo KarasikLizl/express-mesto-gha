@@ -86,9 +86,14 @@ export const putLikeCard = (req, res, next) => {
 };
 
 export const deleteLikeCard = (req, res, next) => {
-  cardSchema.findById(req.params.cardId)
+  cardSchema
+    .findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+    )
     .orFail(() => {
-      next(new Error('IncorrectId'));
+      throw new Error('IncorrectId');
     })
     .then((card) => {
       if (card.owner._id.toString() === req.user._id) {
