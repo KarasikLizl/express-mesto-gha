@@ -29,7 +29,7 @@ export const getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('id не найден');
+        next(new BadRequestError('id не найден'));
       } else {
         next(err);
       }
@@ -89,13 +89,13 @@ export const login = (req, res, next) => {
   } else {
     userSchema.findOne({ email }).select('+password')
       .orFail(() => {
-        throw new NotAuthorizedError('Неверный email или пароль');
+        next(new NotAuthorizedError('Неверный email или пароль'));
       })
       .then((user) => {
         bcrypt.compare(password, user.password)
           .then((matched) => {
             if (!matched) {
-              throw new NotAuthorizedError('Неверный email или пароль');
+              next(new NotAuthorizedError('Неверный email или пароль'));
             } else {
               const token = jwt.sign({ _id: user._id }, 'super-strong-secret-key', { expiresIn: '7d' });
               res.send({ token });
@@ -115,7 +115,7 @@ export const updateProfile = (req, res, next) => {
       { name, about },
       { new: true, runValidators: true },
     )
-    .orFail(() =>{ throw new NotFoundError('Пользователь не найден') })
+    .orFail(() =>{ next(new NotFoundError('Пользователь не найден')) })
     .then((user) => {
       res.status(OK).send(user);
     })
@@ -137,7 +137,7 @@ export const updateAvatar = (req, res, next) => {
       { avatar },
       { new: true, runValidators: true },
     )
-    .orFail(() => { throw new NotFoundError('Пользователь не найден') })
+    .orFail(() => {next(new NotFoundError('Пользователь не найден'))})
     .then((user) => {
       res.status(OK).send(user);
     })

@@ -86,26 +86,24 @@ export const putLikeCard = (req, res, next) => {
 };
 
 export const deleteLikeCard = (req, res, next) => {
-  cardSchema
-    .findByIdAndUpdate(
-      req.params.cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
-      { new: true },
-    )
+  cardSchema.findById(req.params.cardId)
     .orFail(() => {
-      throw new Error('IncorrectId');
+      next(new Error('IncorrectId'));
     })
     .then((card) => {
-      res.status(OK).send(card);
+      if (card.owner._id.toString() === req.user._id) {
+        cardSchema.deleteOne(card).then(() => {
+          res.status(OK).send({ message: 'Карточка удалена' });
+        });
+      } else {
+        next(new ForbiddenError('Вы не можете удалить чужую карточку'));
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Карточка не найдена'));
       } else if (err.message === 'IncorrectId') {
-        next(new NotFoundError('Карточка по этому id не найдена'));
-      } else {
-        next(err);
-      }
-    })
-    .catch(next);
+        next(new NotFoundError('Карточка по этому Id не найдена'));
+      } else next(err);
+    });
 };
