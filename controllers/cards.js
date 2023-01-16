@@ -31,7 +31,6 @@ export const createCard = (req, res, next) => {
         next(err);
       }
     })
-    // .catch(next);
 };
 
 export const deleteCard = (req, res, next) => {
