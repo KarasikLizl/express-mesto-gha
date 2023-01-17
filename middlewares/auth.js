@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import NotAuthorizedError from '../errors/unauthorized.js';
 
-const auth = (req, res, next) => {
+// eslint-disable-next-line import/prefer-default-export
+export const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new NotAuthorizedError('Необходима авторизация');
@@ -21,5 +22,3 @@ const auth = (req, res, next) => {
 
   next();
 };
-
-export default auth;

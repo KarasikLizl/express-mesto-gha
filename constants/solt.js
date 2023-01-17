@@ -1,3 +1,2 @@
-const SOLT_ROUNDS = 10;
-
-export default SOLT_ROUNDS;
+// eslint-disable-next-line import/prefer-default-export
+export const SOLT_ROUNDS = 10;
