@@ -1,4 +1,5 @@
 import express from 'express';
+import { celebrate, Joi } from 'celebrate';
 import {
   getUserById,
   getUsers,
@@ -6,7 +7,6 @@ import {
   updateAvatar,
   getMyProfile,
 } from '../controllers/users.js';
-import { celebrate, Joi } from 'celebrate';
 
 const usersRoutes = express.Router();
 

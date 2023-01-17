@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import NotAuthorizedError from '../errors/unauthorized.js';
 
-export const auth = (req, res, next) => {
+const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new NotAuthorizedError('Необходима авторизация');
@@ -21,3 +21,5 @@ export const auth = (req, res, next) => {
 
   next();
 };
+
+export default auth;

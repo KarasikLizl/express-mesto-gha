@@ -1,8 +1,8 @@
 import cardSchema from '../models/card.js';
 import { OK } from '../constants/errors.js';
 
-import BadRequestError from "../errors/bad_req.js";
-import NotFoundError from "../errors/not_found.js";
+import BadRequestError from '../errors/bad_req.js';
+import NotFoundError from '../errors/not_found.js';
 import ForbiddenError from '../errors/forbidden.js';
 
 export const getCards = (req, res, next) => {
@@ -30,7 +30,7 @@ export const createCard = (req, res, next) => {
       } else {
         next(err);
       }
-    })
+    });
 };
 
 export const deleteCard = (req, res, next) => {
@@ -45,7 +45,7 @@ export const deleteCard = (req, res, next) => {
           res.status(OK).send({ message: 'Карточка удалена' });
         });
       } else {
-       throw new ForbiddenError('Вы не можете удалить эту карточку');
+        throw new ForbiddenError('Вы не можете удалить эту карточку');
       }
     })
     .catch((err) => {
@@ -78,7 +78,7 @@ export const putLikeCard = (req, res, next) => {
       } else if (err.message === 'IncorrectId') {
         next(new NotFoundError('Карточка по этому id не найдена'));
       } else {
-       next(err);
+        next(err);
       }
     })
     .catch(next);
@@ -87,9 +87,9 @@ export const putLikeCard = (req, res, next) => {
 export const deleteLikeCard = (req, res, next) => {
   cardSchema
     .findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true },
     )
     .orFail(() => {
       throw new Error('IncorrectId');

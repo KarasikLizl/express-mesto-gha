@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (v) => urlRegExp.test(v),
       message: 'Поле должно быть валидным url-адресом.',
-      },
+    },
   },
   password: {
     type: String,
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (v) => urlRegExp.test(v),
       message: 'Поле должно быть валидным url-адресом.',
-      },
+    },
   },
 });
 

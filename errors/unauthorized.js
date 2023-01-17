@@ -4,5 +4,4 @@ export default class NotAuthorizedError extends Error {
     this.statusCode = 401;
     this.message = message;
   }
-};
-
+}

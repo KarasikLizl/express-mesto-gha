@@ -14,7 +14,7 @@ const cardSchema = new mongoose.Schema({
     validate: {
       validator: (v) => urlRegExp.test(v),
       message: 'Поле должно быть валидным url-адресом.',
-      },
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

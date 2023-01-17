@@ -1,4 +1,7 @@
+/* eslint-disable no-useless-escape */
+
 import express from 'express';
+import { celebrate, Joi } from 'celebrate';
 import {
   getCards,
   createCard,
@@ -6,7 +9,6 @@ import {
   putLikeCard,
   deleteLikeCard,
 } from '../controllers/cards.js';
-import { celebrate, Joi } from 'celebrate';
 
 const cardRoutes = express.Router();
 
@@ -16,7 +18,7 @@ cardRoutes.post('/cards', express.json(), celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required()
-    .regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/),
+      .regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/),
   }),
 }), createCard);
 

@@ -4,5 +4,4 @@ export default class ForbiddenError extends Error {
     this.statusCode = 403;
     this.message = message;
   }
-};
-
+}

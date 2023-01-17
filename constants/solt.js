@@ -1,1 +1,3 @@
-export const SOLT_ROUNDS = 10;
+const SOLT_ROUNDS = 10;
+
+export default SOLT_ROUNDS;
